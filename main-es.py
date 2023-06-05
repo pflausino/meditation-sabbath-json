@@ -45,15 +45,14 @@ def extract_text_from_pdf(pdf_path, start_page, end_page, bible_books):
             # Add a space between a number and a letter
             remaining_text = re.sub(r"(\d)([A-Za-z])", r"\1 \2", remaining_text)
 
-
-            # Remove text until the fourth "•" character in the date_display
-            _, _, date_display = date_display.partition("•")
-            _, _, date_display = date_display.partition("•")
-            _, _, date_display = date_display.partition("•")
-            _, _, date_display = date_display.partition("•")
+            if (page_num+1) >= 14:
+                date_display = date_display[2:]
+            else:
+                date_display = date_display[1:]
 
             # Remove "DE" from the date_display
-            date_temp = date_display.replace("DE ", "")
+            date_temp = date_display.replace("de ", "")
+
 
             # Add "de 2023" to the end of date_temp
             date_temp += " de 2023"
@@ -93,9 +92,15 @@ def extract_text_from_pdf(pdf_path, start_page, end_page, bible_books):
 
             # Remove '\n' characters from verse_text
             verse_text = verse_text.replace("\n", "")
+            verse_text = verse_text.replace("(", "")
+            verse_text = verse_text.replace('”', '')
+            verse_text = verse_text.replace('“', '')
+
+
 
             # Cut the text from remaining_text until the next '\n' and assign it to verse_ref
             verse_ref, _, remaining_text = remaining_text.partition("\n")
+            verse_ref = verse_ref.replace(').', '')
 
             # Remove '\n' from remaining_text unless the next letter is uppercase or '-'
             cleaned_text = ""
@@ -114,6 +119,9 @@ def extract_text_from_pdf(pdf_path, start_page, end_page, bible_books):
             cleaned_text = cleaned_text.replace(
                 "46149 – Meditação Por do Sol - 2023\nDesigner Editor(a) Coor. Ped. C. Q. R. F . Marketing14 October 2022 9:50 am\nP1\nP2", ""
             )
+
+
+
             text_record = {
                 "page_number": page_num + 1,
                 "text": cleaned_text.strip(),
@@ -131,7 +139,7 @@ def extract_text_from_pdf(pdf_path, start_page, end_page, bible_books):
 pdf_path = "./113687-Meditaciones_para_la_puesta_del_sol_2023.pdf"
 
 # Specify the page range (starting from 0) to extract text from
-start_page = 5  # Page 6 in zero-based index
+start_page = 7  # Page 8 in zero-based index
 end_page = 57  # Page 58 in zero-based index
 
 # Specify the path to the file containing Bible books
